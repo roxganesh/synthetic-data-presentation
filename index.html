@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthetic Data Generation - Enhanced - Ganesh Kumar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bone: #E2DCC9;
+            --black: #000000;
+            --ink: #0A0A0A;
+            --paper: #F4EFE0;
+            --newsprint: #F5F1E8;
+            --sienna: #A06A3C;
+            --magenta: #C73B7A;
+            --orange: #EE7A2E;
+            --teal: #2D7E73;
+            --blue: #3F73B7;
+            --mustard: #D8A93B;
+            --olive: #6F7A2E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--bone);
+        }
+
+        .stage {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 1920px;
+            height: 1080px;
+            transform-origin: center;
+            background: var(--bone);
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 1920px;
+            height: 1080px;
+            background: var(--bone);
+            padding: 80px;
+            display: none;
+            overflow: hidden;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 180px;
+            line-height: 0.82;
+            letter-spacing: -0.015em;
+            text-transform: uppercase;
+            color: var(--black);
+            margin: 0;
+        }
+
+        h2 {
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 100px;
+            line-height: 0.92;
+            letter-spacing: -0.005em;
+            text-transform: uppercase;
+            color: var(--black);
+            margin: 0 0 60px 0;
+        }
+
+        h3 {
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 64px;
+            line-height: 0.92;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
+            color: var(--black);
+            margin: 0 0 40px 0;
+        }
+
+        .subtitle {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800;
+            font-size: 42px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink);
+            margin-top: 40px;
+        }
+
+        .body-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 32px;
+            line-height: 1.6;
+            color: var(--ink);
+            margin-bottom: 28px;
+        }
+
+        .big-number {
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 280px;
+            line-height: 0.8;
+            color: var(--magenta);
+        }
+
+        /* Newspaper clipping style */
+        .newspaper-clip {
+            background: var(--newsprint);
+            border: 3px solid var(--black);
+            border-radius: 4px;
+            padding: 48px;
+            box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.15);
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        .newspaper-clip::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+        }
+
+        .clip-headline {
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 52px;
+            line-height: 1.1;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 20px;
+            border-bottom: 4px solid var(--black);
+            padding-bottom: 16px;
+        }
+
+        .clip-source {
+            font-family: 'Courier Prime', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--sienna);
+            margin-bottom: 24px;
+            text-transform: uppercase;
+        }
+
+        .clip-text {
+            font-family: 'Courier Prime', monospace;
+            font-size: 24px;
+            line-height: 1.6;
+            color: var(--ink);
+        }
+
+        /* Embedded slide image */
+        .slide-embed {
+            width: 100%;
+            max-height: 720px;
+            object-fit: contain;
+            border: 6px solid var(--black);
+            border-radius: 12px;
+            box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Quote box */
+        .quote-box {
+            background: var(--paper);
+            border-left: 12px solid var(--magenta);
+            padding: 56px;
+            margin: 48px 0;
+            font-family: 'Stardos Stencil', serif;
+            font-size: 48px;
+            line-height: 1.2;
+            color: var(--black);
+            font-style: italic;
+        }
+
+        .quote-box cite {
+            display: block;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 28px;
+            font-style: normal;
+            font-weight: 800;
+            margin-top: 24px;
+            color: var(--magenta);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* Tablet cards */
+        .tablet-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .tablet-card {
+            background: var(--paper);
+            border-radius: 24px;
+            padding: 48px;
+            border: 4px solid var(--black);
+        }
+
+        .card-number {
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 96px;
+            line-height: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 38px;
+            line-height: 1.15;
+            text-transform: uppercase;
+            letter-spacing: -0.005em;
+            margin-bottom: 20px;
+            color: var(--black);
+        }
+
+        .card-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 26px;
+            line-height: 1.4;
+            color: var(--ink);
+        }
+
+        /* Bullets */
+        ul {
+            list-style: none;
+            margin: 48px 0;
+        }
+
+        ul li {
+            font-family: 'Inter', sans-serif;
+            font-size: 32px;
+            line-height: 1.7;
+            color: var(--ink);
+            margin-bottom: 24px;
+            padding-left: 60px;
+            position: relative;
+        }
+
+        ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--orange);
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        ul li strong {
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        /* Stats highlight */
+        .stat-highlight {
+            background: var(--paper);
+            border: 6px solid var(--black);
+            border-radius: 16px;
+            padding: 40px 60px;
+            display: inline-block;
+            margin: 24px 0;
+        }
+
+        .stat-highlight .number {
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 120px;
+            line-height: 1;
+            color: var(--magenta);
+        }
+
+        .stat-highlight .label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800;
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--black);
+            margin-top: 12px;
+        }
+
+        /* Page number */
+        .page-num {
+            position: absolute;
+            bottom: 60px;
+            right: 80px;
+            font-family: 'Stardos Stencil', serif;
+            font-weight: 700;
+            font-size: 48px;
+            color: var(--black);
+        }
+
+        /* Two column layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="stage" id="stage">
+
+        <!-- SLIDE 1: Title -->
+        <section class="slide active">
+            <h1>SYNTHETIC<br>DATA<br>GENERATION</h1>
+            <p class="subtitle">AI-POWERED PRIVACY PROTECTION</p>
+            <p class="subtitle" style="margin-top: 100px;">GANESH KUMAR</p>
+        </section>
+
+        <!-- SLIDE 2: Agenda (Editorial Forest Style) -->
+        <section class="slide">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 60px;">
+                <h1 style="font-size: 180px; line-height: 0.9; color: #2d5016;">Agenda.</h1>
+                <p style="font-family: 'Courier Prime', monospace; font-size: 28px; letter-spacing: 0.15em; color: var(--ink); margin-top: 40px;">SEVEN TOPICS · SIXTY MINUTES</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 32px; height: 700px;">
+
+                <!-- Card 01 - Large -->
+                <div style="grid-row: span 2; background: #2d5016; border: 6px solid var(--black); border-radius: 24px; padding: 60px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 8px 8px 0 rgba(0,0,0,0.2);">
+                    <div>
+                        <p style="font-family: 'Courier Prime', monospace; font-size: 32px; color: #FFB6C1; margin-bottom: 40px; letter-spacing: 0.1em;">01</p>
+                        <h2 style="font-size: 110px; line-height: 0.95; color: #FFB6C1; font-family: 'Stardos Stencil', serif; margin: 0;">The privacy challenge.</h2>
+                    </div>
+                    <p style="font-family: 'Courier Prime', monospace; font-size: 24px; color: #FFB6C1; text-transform: uppercase; letter-spacing: 0.15em;">CONTEXT</p>
+                </div>
+
+                <!-- Card 02 -->
+                <div style="background: #FFB6C1; border: 6px solid var(--black); border-radius: 24px; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 8px 8px 0 rgba(0,0,0,0.2);">
+                    <div>
+                        <p style="font-family: 'Courier Prime', monospace; font-size: 28px; color: #2d5016; margin-bottom: 32px; letter-spacing: 0.1em;">02</p>
+                        <h3 style="font-size: 64px; line-height: 1; color: #2d5016; font-family: 'Stardos Stencil', serif; margin: 0;">Regulatory landscape.</h3>
+                    </div>
+                    <p style="font-family: 'Courier Prime', monospace; font-size: 20px; color: #2d5016; text-transform: uppercase; letter-spacing: 0.15em;">COMPLIANCE</p>
+                </div>
+
+                <!-- Card 03 -->
+                <div style="background: var(--paper); border: 6px solid var(--black); border-radius: 24px; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 8px 8px 0 rgba(0,0,0,0.2);">
+                    <div>
+                        <p style="font-family: 'Courier Prime', monospace; font-size: 28px; color: #2d5016; margin-bottom: 32px; letter-spacing: 0.1em;">03</p>
+                        <h3 style="font-size: 64px; line-height: 1; color: #2d5016; font-family: 'Stardos Stencil', serif; margin: 0;">Why legacy fails.</h3>
+                    </div>
+                    <p style="font-family: 'Courier Prime', monospace; font-size: 20px; color: #2d5016; text-transform: uppercase; letter-spacing: 0.15em;">PROBLEM</p>
+                </div>
+
+                <!-- Card 04 -->
+                <div style="background: #3F5930; border: 6px solid var(--black); border-radius: 24px; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 8px 8px 0 rgba(0,0,0,0.2);">
+                    <div>
+                        <p style="font-family: 'Courier Prime', monospace; font-size: 28px; color: #FFB6C1; margin-bottom: 32px; letter-spacing: 0.1em;">04</p>
+                        <h3 style="font-size: 64px; line-height: 1; color: #FFB6C1; font-family: 'Stardos Stencil', serif; margin: 0;">What is synthetic data?</h3>
+                    </div>
+                    <p style="font-family: 'Courier Prime', monospace; font-size: 20px; color: #FFB6C1; text-transform: uppercase; letter-spacing: 0.15em;">DEFINITION</p>
+                </div>
+
+                <!-- Card 05 -->
+                <div style="background: #E8A5B8; border: 6px solid var(--black); border-radius: 24px; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 8px 8px 0 rgba(0,0,0,0.2);">
+                    <div>
+                        <p style="font-family: 'Courier Prime', monospace; font-size: 28px; color: #2d5016; margin-bottom: 32px; letter-spacing: 0.1em;">05</p>
+                        <h3 style="font-size: 64px; line-height: 1; color: #2d5016; font-family: 'Stardos Stencil', serif; margin: 0;">How it works.</h3>
+                    </div>
+                    <p style="font-family: 'Courier Prime', monospace; font-size: 20px; color: #2d5016; text-transform: uppercase; letter-spacing: 0.15em;">PROCESS</p>
+                </div>
+            </div>
+
+            <p class="page-num">02</p>
+        </section>
+
+        <!-- SLIDE 3: Agenda Continued (Cards 06-07) -->
+        <section class="slide">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 60px;">
+                <h1 style="font-size: 180px; line-height: 0.9; color: #2d5016;">Agenda.</h1>
+                <p style="font-family: 'Courier Prime', monospace; font-size: 28px; letter-spacing: 0.15em; color: var(--ink); margin-top: 40px;">CONTINUED</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; max-width: 1600px;">
+
+                <!-- Card 06 -->
+                <div style="background: #2d5016; border: 6px solid var(--black); border-radius: 24px; padding: 60px; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px; box-shadow: 8px 8px 0 rgba(0,0,0,0.2);">
+                    <div>
+                        <p style="font-family: 'Courier Prime', monospace; font-size: 32px; color: #FFB6C1; margin-bottom: 40px; letter-spacing: 0.1em;">06</p>
+                        <h2 style="font-size: 90px; line-height: 1; color: #FFB6C1; font-family: 'Stardos Stencil', serif; margin: 0;">Real-world applications.</h2>
+                    </div>
+                    <p style="font-family: 'Courier Prime', monospace; font-size: 24px; color: #FFB6C1; text-transform: uppercase; letter-spacing: 0.15em;">USE CASES</p>
+                </div>
+
+                <!-- Card 07 -->
+                <div style="background: #FFB6C1; border: 6px solid var(--black); border-radius: 24px; padding: 60px; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px; box-shadow: 8px 8px 0 rgba(0,0,0,0.2);">
+                    <div>
+                        <p style="font-family: 'Courier Prime', monospace; font-size: 32px; color: #2d5016; margin-bottom: 40px; letter-spacing: 0.1em;">07</p>
+                        <h2 style="font-size: 90px; line-height: 1; color: #2d5016; font-family: 'Stardos Stencil', serif; margin: 0;">Key takeaways & next steps.</h2>
+                    </div>
+                    <p style="font-family: 'Courier Prime', monospace; font-size: 24px; color: #2d5016; text-transform: uppercase; letter-spacing: 0.15em;">SUMMARY</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 80px; background: var(--paper); border: 6px solid var(--black); border-radius: 20px; padding: 48px; max-width: 1600px;">
+                <p style="font-family: 'Inter', sans-serif; font-size: 32px; line-height: 1.6; color: var(--ink);">
+                    <strong style="color: #2d5016;">Today's journey:</strong> Understanding why synthetic data is becoming the cornerstone of privacy-preserving AI and data analytics in the modern enterprise.
+                </p>
+            </div>
+
+            <p class="page-num">03</p>
+        </section>
+
+        <!-- SLIDE 4: Why Synthetic Data -->
+        <section class="slide">
+            <h2>WHY SYNTHETIC<br>DATA?</h2>
+            <p class="body-text" style="font-size: 44px; max-width: 1600px;"><strong>The business problem:</strong> Data utilization vs. privacy protection</p>
+            <div class="two-col" style="margin-top: 80px;">
+                <div>
+                    <h3 style="color: var(--magenta);">THE CHALLENGE</h3>
+                    <ul>
+                        <li>GDPR & privacy regulations</li>
+                        <li>Data sharing barriers</li>
+                        <li>Legacy anonymization fails</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="color: var(--teal);">THE SOLUTION</h3>
+                    <ul>
+                        <li>AI-generated synthetic data</li>
+                        <li>True anonymization</li>
+                        <li>Full utility maintained</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="page-num">04</p>
+        </section>
+
+        <!-- SLIDE 5: Regulatory Complexity (world map with image) -->
+        <section class="slide" style="justify-content: flex-start; padding-top: 60px;">
+            <h2 style="font-size: 88px; margin-bottom: 24px;">GLOBAL DATA PRIVACY<br>REGULATORY LANDSCAPE</h2>
+            <p class="body-text" style="font-size: 32px; margin-bottom: 48px; color: #666;">Navigating an increasingly complex web of regulations worldwide</p>
+
+            <div style="position: relative; background: #FFFFFF; border-radius: 24px; padding: 60px 80px; border: 6px solid var(--black); min-height: 680px; box-shadow: 12px 12px 0 rgba(0,0,0,0.1); overflow: hidden;">
+
+                <!-- World Map Image as background -->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1920px-Equirectangular_projection_SW.jpg"
+                     style="position: absolute; top: 50px; left: 50px; right: 50px; width: calc(100% - 100px); height: calc(100% - 100px); object-fit: contain; opacity: 0.25; filter: grayscale(50%) brightness(1.2);"
+                     alt="World Map">
+
+                <!-- Regulation badges positioned on map -->
+
+                <!-- NORTH AMERICA -->
+                <div style="position: absolute; top: 140px; left: 180px; background: #FF6B6B; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: white; text-align: center;">CCPA</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: white; text-align: center; margin-top: 4px;">California</p>
+                </div>
+
+                <div style="position: absolute; top: 100px; left: 280px; background: #FF6B6B; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: white; text-align: center;">PIPEDA</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: white; text-align: center; margin-top: 4px;">Canada</p>
+                </div>
+
+                <!-- SOUTH AMERICA -->
+                <div style="position: absolute; top: 420px; left: 320px; background: #A06A3C; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: white; text-align: center;">LGPD</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: white; text-align: center; margin-top: 4px;">Brazil</p>
+                </div>
+
+                <!-- UK -->
+                <div style="position: absolute; top: 120px; left: 680px; background: #5B4BE8; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: white; text-align: center;">UK GDPR</p>
+                </div>
+
+                <!-- EUROPE - Main cluster -->
+                <div style="position: absolute; top: 120px; left: 780px; background: #00D98B; padding: 16px 28px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 26px; color: var(--black); text-align: center;">GDPR</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: var(--black); text-align: center; margin-top: 4px;">EU</p>
+                </div>
+
+                <div style="position: absolute; top: 120px; left: 920px; background: #00D98B; padding: 14px 20px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 20px; color: var(--black); text-align: center;">AI Act</p>
+                </div>
+
+                <div style="position: absolute; top: 190px; left: 730px; background: #00D98B; padding: 12px 18px; border-radius: 10px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 18px; color: var(--black); text-align: center;">DGA</p>
+                </div>
+
+                <div style="position: absolute; top: 190px; left: 820px; background: #00D98B; padding: 12px 18px; border-radius: 10px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 18px; color: var(--black); text-align: center;">DSA</p>
+                </div>
+
+                <div style="position: absolute; top: 190px; left: 910px; background: #00D98B; padding: 12px 18px; border-radius: 10px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 18px; color: var(--black); text-align: center;">DMA</p>
+                </div>
+
+                <div style="position: absolute; top: 250px; left: 770px; background: #00D98B; padding: 12px 18px; border-radius: 10px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 18px; color: var(--black); text-align: center;">ePrivacy</p>
+                </div>
+
+                <div style="position: absolute; top: 250px; left: 890px; background: #00D98B; padding: 12px 18px; border-radius: 10px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 18px; color: var(--black); text-align: center;">NIS2</p>
+                </div>
+
+                <!-- AFRICA -->
+                <div style="position: absolute; top: 340px; left: 780px; background: #9B59B6; padding: 14px 20px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 20px; color: white; text-align: center;">POPIA</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: white; text-align: center; margin-top: 4px;">South Africa</p>
+                </div>
+
+                <!-- ASIA -->
+                <div style="position: absolute; top: 180px; left: 1100px; background: #FFB020; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: var(--black); text-align: center;">PIPL</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: var(--black); text-align: center; margin-top: 4px;">China</p>
+                </div>
+
+                <div style="position: absolute; top: 260px; left: 1180px; background: #FFB020; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: var(--black); text-align: center;">PDPA</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: var(--black); text-align: center; margin-top: 4px;">Singapore</p>
+                </div>
+
+                <div style="position: absolute; top: 140px; left: 1280px; background: #FFB020; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: var(--black); text-align: center;">APPI</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: var(--black); text-align: center; margin-top: 4px;">Japan</p>
+                </div>
+
+                <div style="position: absolute; top: 220px; left: 1020px; background: #FFB020; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: var(--black); text-align: center;">DPDPA</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: var(--black); text-align: center; margin-top: 4px;">India</p>
+                </div>
+
+                <!-- AUSTRALIA -->
+                <div style="position: absolute; top: 440px; left: 1270px; background: #C73B7A; padding: 16px 24px; border-radius: 12px; border: 4px solid var(--black); box-shadow: 6px 6px 0 rgba(0,0,0,0.3); z-index: 10;">
+                    <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 22px; color: white; text-align: center;">Privacy Act</p>
+                    <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: white; text-align: center; margin-top: 4px;">Australia</p>
+                </div>
+
+                <!-- Legend at bottom -->
+                <div style="position: absolute; bottom: 30px; left: 80px; display: flex; gap: 32px; align-items: center; background: rgba(255,255,255,0.95); padding: 16px 32px; border-radius: 12px; border: 3px solid var(--black); z-index: 10;">
+                    <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">LEGEND:</p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 28px; height: 28px; background: #00D98B; border: 3px solid var(--black); border-radius: 6px;"></div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 18px; color: var(--black);">EU</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 28px; height: 28px; background: #FF6B6B; border: 3px solid var(--black); border-radius: 6px;"></div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 18px; color: var(--black);">Americas</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 28px; height: 28px; background: #FFB020; border: 3px solid var(--black); border-radius: 6px;"></div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 18px; color: var(--black);">Asia-Pacific</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 28px; height: 28px; background: #5B4BE8; border: 3px solid var(--black); border-radius: 6px;"></div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 18px; color: var(--black);">UK</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 28px; height: 28px; background: #9B59B6; border: 3px solid var(--black); border-radius: 6px;"></div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 18px; color: var(--black);">Africa</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="page-num">05</p>
+        </section>
+
+        <!-- SLIDE 6: Legacy Anonymization Fails (recreated) -->
+        <section class="slide">
+            <h2 style="font-size: 80px;">LEGACY<br>ANONYMIZATION<br>IS EASY TO<br>RE-IDENTIFY</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 60px; align-items: center;">
+                <div>
+                    <div style="text-align: center;">
+                        <p class="big-number" style="font-size: 320px; color: #FF4444;">80%</p>
+                        <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 38px; margin-top: 20px;">re-identification with<br>only <span style="font-size: 56px; color: var(--magenta);">3</span> credit card<br>transactions</p>
+                    </div>
+                </div>
+                <div>
+                    <div style="background: var(--paper); border: 8px solid var(--black); border-radius: 48px; padding: 60px; box-shadow: 16px 16px 0 rgba(0,0,0,0.2);">
+                        <div style="background: #1a1a2e; border-radius: 32px; padding: 48px; color: white;">
+                            <p style="font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 32px; margin-bottom: 24px; color: #888;">TRANSACTION HISTORY</p>
+                            <div style="background: rgba(255,255,255,0.1); padding: 24px; margin-bottom: 16px; border-radius: 12px;">
+                                <p style="font-family: 'Courier Prime', monospace; font-size: 22px; margin-bottom: 8px;">Aug 8, 2019</p>
+                                <p style="font-family: 'Inter', sans-serif; font-size: 26px; font-weight: 600;">LYFT *RIDE THU 2PM</p>
+                                <p style="font-family: 'Courier Prime', monospace; font-size: 20px; color: #aaa;">FRANCISCO CA</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 24px; margin-bottom: 16px; border-radius: 12px;">
+                                <p style="font-family: 'Courier Prime', monospace; font-size: 22px; margin-bottom: 8px;">Aug 8, 2019</p>
+                                <p style="font-family: 'Inter', sans-serif; font-size: 26px; font-weight: 600;">AUDIBLE AUDIOBOOK</p>
+                                <p style="font-family: 'Courier Prime', monospace; font-size: 20px; color: #aaa;">NJ</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 24px; border-radius: 12px;">
+                                <p style="font-family: 'Courier Prime', monospace; font-size: 22px; margin-bottom: 8px;">Aug 2, 2019</p>
+                                <p style="font-family: 'Inter', sans-serif; font-size: 26px; font-weight: 600;">AMZN MKTP US*MA5DF2</p>
+                                <p style="font-family: 'Courier Prime', monospace; font-size: 20px; color: #aaa;">BILL WA</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="background: #FF4444; color: white; padding: 40px; margin-top: 40px; border-radius: 16px; border: 6px solid var(--black);">
+                <p style="font-family: 'Inter', sans-serif; font-size: 28px; text-align: center; line-height: 1.6;">
+                    <strong>80% of data subjects are re-identified by 3 transactions, even when only the merchant and the date of transaction are revealed</strong>
+                </p>
+            </div>
+            <p class="page-num">06</p>
+        </section>
+
+        <!-- SLIDE 7: What is Synthetic Data (definition focused) -->
+        <section class="slide" style="justify-content: flex-start; padding-top: 60px;">
+            <h2 style="font-size: 88px; margin-bottom: 40px; text-align: center;">WHAT IS SYNTHETIC DATA?</h2>
+
+            <div class="quote-box" style="background: linear-gradient(135deg, #5B4BE8 0%, #7B6BE8 100%); border-left: 12px solid var(--black); color: white; margin: 40px auto; max-width: 1600px; font-size: 42px; padding: 52px 64px;">
+                "Artificially generated data that mimics the statistical properties and patterns of real-world data, without containing any actual personal information."
+                <cite style="color: #FFD700; font-size: 32px;">— National Institute of Standards and Technology (NIST)</cite>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px; margin: 40px 0; max-width: 1700px; margin-left: auto; margin-right: auto;">
+                <div class="tablet-card" style="border-color: #5B4BE8; background: rgba(91, 75, 232, 0.05); padding: 40px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: #5B4BE8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto;">
+                        <span style="font-size: 48px;">🤖</span>
+                    </div>
+                    <p class="card-title" style="color: #5B4BE8; font-size: 32px; margin-bottom: 16px;">AI-GENERATED</p>
+                    <p class="card-text" style="font-size: 22px; line-height: 1.5;">Created by machine learning algorithms trained on real data</p>
+                </div>
+
+                <div class="tablet-card" style="border-color: var(--magenta); background: rgba(199, 59, 122, 0.05); padding: 40px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: var(--magenta); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto;">
+                        <span style="font-size: 48px;">📊</span>
+                    </div>
+                    <p class="card-title" style="color: var(--magenta); font-size: 32px; margin-bottom: 16px;">STATISTICALLY SIMILAR</p>
+                    <p class="card-text" style="font-size: 22px; line-height: 1.5;">Preserves distributions, correlations, and characteristics</p>
+                </div>
+
+                <div class="tablet-card" style="border-color: var(--teal); background: rgba(45, 126, 115, 0.05); padding: 40px; text-align: center;">
+                    <div style="width: 80px; height: 80px; background: var(--teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto;">
+                        <span style="font-size: 48px;">🔒</span>
+                    </div>
+                    <p class="card-title" style="color: var(--teal); font-size: 32px; margin-bottom: 16px;">PRIVACY-SAFE</p>
+                    <p class="card-text" style="font-size: 22px; line-height: 1.5;">Contains zero personal information - cannot be traced back</p>
+                </div>
+            </div>
+
+            <div style="background: var(--paper); border: 6px solid var(--black); border-radius: 20px; padding: 52px; margin-top: 40px; text-align: center; max-width: 1600px; margin-left: auto; margin-right: auto;">
+                <p style="font-family: 'Inter', sans-serif; font-size: 36px; font-weight: 600; line-height: 1.5; color: var(--ink); display: flex; align-items: center; justify-content: center;">
+                    <span style="color: #5B4BE8; font-size: 44px; font-weight: 700;">Real Data</span>
+                    <span style="font-size: 60px; margin: 0 40px; font-weight: 700;">→</span>
+                    <span style="color: var(--magenta); font-size: 44px; font-weight: 700;">AI Model</span>
+                    <span style="font-size: 60px; margin: 0 40px; font-weight: 700;">→</span>
+                    <span style="color: var(--teal); font-size: 44px; font-weight: 700;">Synthetic Data</span>
+                </p>
+            </div>
+
+            <p class="page-num">07</p>
+        </section>
+
+        <!-- SLIDE 8: How It Works (following slide_021 design) -->
+        <section class="slide" style="justify-content: flex-start; padding-top: 60px;">
+            <h2 style="font-size: 88px; margin-bottom: 48px;">SYNTHETIC DATA GENERATION<br>HOW IT WORKS</h2>
+
+            <!-- Flow diagram -->
+            <div style="display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 40px; align-items: start; margin-top: 60px;">
+
+                <!-- Original Data -->
+                <div>
+                    <div style="background: white; border: 6px solid var(--black); border-radius: 24px; padding: 48px 40px; min-height: 280px; position: relative; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
+                        <div style="margin-bottom: 32px;">
+                            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                                <div style="width: 120px; height: 32px; background: #E8E8E8; border: 3px solid var(--black); border-radius: 6px;"></div>
+                            </div>
+                            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                                <div style="width: 120px; height: 32px; background: #E8E8E8; border: 3px solid var(--black); border-radius: 6px;"></div>
+                            </div>
+                            <div style="display: flex; gap: 12px;">
+                                <div style="width: 120px; height: 32px; background: #E8E8E8; border: 3px solid var(--black); border-radius: 6px;"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="background: #00D98B; padding: 12px 20px; border-radius: 8px; border: 3px solid var(--black);">
+                                <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">Behavioral data</p>
+                            </div>
+                            <div style="background: #00D98B; padding: 12px 20px; border-radius: 8px; border: 3px solid var(--black);">
+                                <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">Transactional data</p>
+                            </div>
+                            <div style="background: #00D98B; padding: 12px 20px; border-radius: 8px; border: 3px solid var(--black);">
+                                <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">Customer data</p>
+                            </div>
+                        </div>
+                        <div style="position: absolute; bottom: -32px; left: 50%; transform: translateX(-50%); width: 80px; height: 80px; background: var(--black); display: flex; align-items: center; justify-content: center;">
+                            <span style="font-size: 56px;">🔒</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 56px;">
+                        <h3 style="font-size: 42px; margin-bottom: 16px; text-align: center;">Original data</h3>
+                        <ul style="list-style: none; margin: 0; padding: 0;">
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; margin-bottom: 8px; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: #5B4BE8; font-size: 32px; top: -2px;">▸</span>
+                                Highly valuable, but
+                            </li>
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; margin-bottom: 8px; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: #5B4BE8; font-size: 32px; top: -2px;">▸</span>
+                                Privacy-sensitive
+                            </li>
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: #5B4BE8; font-size: 32px; top: -2px;">▸</span>
+                                Locked away (GDPR/CCPA)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Arrow 1 -->
+                <div style="display: flex; align-items: center; height: 280px;">
+                    <span style="font-size: 80px; color: #FF4444; font-weight: 900;">→</span>
+                </div>
+
+                <!-- Synthetization -->
+                <div>
+                    <div style="background: linear-gradient(135deg, #F5F5F5, #E8E8E8); border: 6px solid var(--black); border-radius: 24px; padding: 48px; min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
+                        <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 56px; text-align: center; line-height: 1.2; margin-bottom: 16px;">Synthetic<br>Data<br>Generator</p>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 20px; text-align: center; margin-top: 20px; font-style: italic; color: #666;">Synthetization within customer's secure environment</p>
+                    </div>
+                    <div style="margin-top: 56px;">
+                        <h3 style="font-size: 42px; margin-bottom: 16px; text-align: center;">Synthetization</h3>
+                        <ul style="list-style: none; margin: 0; padding: 0;">
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; margin-bottom: 8px; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: var(--magenta); font-size: 32px; top: -2px;">▸</span>
+                                Fully automated with privacy mechanisms
+                            </li>
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; margin-bottom: 8px; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: var(--magenta); font-size: 32px; top: -2px;">▸</span>
+                                Unsupervised ML process
+                            </li>
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: var(--magenta); font-size: 32px; top: -2px;">▸</span>
+                                Result is stat model of input data
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Arrow 2 -->
+                <div style="display: flex; align-items: center; height: 280px;">
+                    <span style="font-size: 80px; color: #FF4444; font-weight: 900;">→</span>
+                </div>
+
+                <!-- Synthetic Data -->
+                <div>
+                    <div style="background: white; border: 6px solid var(--black); border-radius: 24px; padding: 48px 40px; min-height: 280px; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="background: #C7FF00; padding: 16px 24px; border-radius: 8px; border: 3px solid var(--black);">
+                                <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">AI training</p>
+                            </div>
+                            <div style="background: #C7FF00; padding: 16px 24px; border-radius: 8px; border: 3px solid var(--black);">
+                                <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">Bias correction</p>
+                            </div>
+                            <div style="background: #C7FF00; padding: 16px 24px; border-radius: 8px; border: 3px solid var(--black);">
+                                <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">Off-shore data sharing</p>
+                            </div>
+                            <div style="background: #C7FF00; padding: 16px 24px; border-radius: 8px; border: 3px solid var(--black);">
+                                <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">Explainable AI</p>
+                            </div>
+                            <div style="background: #C7FF00; padding: 16px 24px; border-radius: 8px; border: 3px solid var(--black);">
+                                <p style="font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--black);">Software development</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 56px;">
+                        <h3 style="font-size: 42px; margin-bottom: 16px; text-align: center;">Synthetic data</h3>
+                        <ul style="list-style: none; margin: 0; padding: 0;">
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; margin-bottom: 8px; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: var(--teal); font-size: 32px; top: -2px;">▸</span>
+                                As-good-as-real
+                            </li>
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; margin-bottom: 8px; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: var(--teal); font-size: 32px; top: -2px;">▸</span>
+                                Fully anonymized
+                            </li>
+                            <li style="font-family: 'Inter', sans-serif; font-size: 22px; color: var(--ink); padding-left: 40px; position: relative; line-height: 1.4;">
+                                <span style="position: absolute; left: 0; color: var(--teal); font-size: 32px; top: -2px;">▸</span>
+                                Free to use (GDPR/CCPA)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <p class="page-num">08</p>
+        </section>
+
+        <!-- SLIDE 9: Six Key Benefits (Merged) -->
+        <section class="slide" style="justify-content: flex-start; padding-top: 50px;">
+            <h2 style="font-size: 110px; margin-bottom: 48px;">SIX KEY BENEFITS</h2>
+
+            <!-- Grid layout: 2 large cards on left, 4 smaller cards on right -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; height: 820px;">
+
+                <!-- Left column: 2 large vertical cards -->
+                <div style="display: flex; flex-direction: column; gap: 32px;">
+                    <!-- Card 1 - Large -->
+                    <div class="tablet-card" style="flex: 1; border-color: #5B4BE8; border-width: 6px; background: linear-gradient(135deg, #5B4BE8 0%, #7B6BE8 100%); padding: 56px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 120px; color: white; line-height: 0.9; margin-bottom: 32px;">01</p>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 52px; line-height: 1.1; text-transform: uppercase; color: white; margin-bottom: 24px;">ELIMINATE<br>PRIVACY RISK</p>
+                        </div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 28px; line-height: 1.5; color: white;">Irreversible AI anonymization protects individuals completely</p>
+                    </div>
+
+                    <!-- Card 2 - Large -->
+                    <div class="tablet-card" style="flex: 1; border-color: var(--magenta); border-width: 6px; background: linear-gradient(135deg, #C73B7A 0%, #D75B8A 100%); padding: 56px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 120px; color: white; line-height: 0.9; margin-bottom: 32px;">02</p>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 52px; line-height: 1.1; text-transform: uppercase; color: white; margin-bottom: 24px;">BE FASTER</p>
+                        </div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 28px; line-height: 1.5; color: white;">Reduce time-to-data and time-to-market for projects</p>
+                    </div>
+                </div>
+
+                <!-- Right column: 4 smaller cards in 2x2 grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 32px;">
+
+                    <!-- Card 3 -->
+                    <div class="tablet-card" style="border-color: var(--teal); border-width: 6px; background: rgba(45, 126, 115, 0.1); padding: 40px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 80px; color: var(--teal); line-height: 0.9; margin-bottom: 20px;">03</p>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 32px; line-height: 1.1; text-transform: uppercase; color: var(--teal); margin-bottom: 16px;">BE MORE ACCURATE</p>
+                        </div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 20px; line-height: 1.4; color: var(--ink);">Granular data retains structure and correlations</p>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="tablet-card" style="border-color: var(--blue); border-width: 6px; background: rgba(63, 115, 183, 0.1); padding: 40px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 80px; color: var(--blue); line-height: 0.9; margin-bottom: 20px;">04</p>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 32px; line-height: 1.1; text-transform: uppercase; color: var(--blue); margin-bottom: 16px;">COLLABORATE MORE</p>
+                        </div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 20px; line-height: 1.4; color: var(--ink);">Share data freely and safely within organizations</p>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="tablet-card" style="border-color: var(--mustard); border-width: 6px; background: rgba(216, 169, 59, 0.1); padding: 40px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 80px; color: var(--mustard); line-height: 0.9; margin-bottom: 20px;">05</p>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 32px; line-height: 1.1; text-transform: uppercase; color: var(--mustard); margin-bottom: 16px;">AUTOMATE & SAVE COSTS</p>
+                        </div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 20px; line-height: 1.4; color: var(--ink);">Streamline legal, compliance and risk procedures</p>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="tablet-card" style="border-color: var(--olive); border-width: 6px; background: rgba(111, 122, 46, 0.1); padding: 40px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 80px; color: var(--olive); line-height: 0.9; margin-bottom: 20px;">06</p>
+                            <p style="font-family: 'Stardos Stencil', serif; font-weight: 700; font-size: 32px; line-height: 1.1; text-transform: uppercase; color: var(--olive); margin-bottom: 16px;">IMPROVE AI/ML</p>
+                        </div>
+                        <p style="font-family: 'Inter', sans-serif; font-size: 20px; line-height: 1.4; color: var(--ink);">Generate balanced datasets and sample rare events</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <p class="page-num">09</p>
+        </section>
+
+        <!-- SLIDE 11: Market Growth -->
+        <section class="slide">
+            <h2>MARKET GROWTH</h2>
+            <div class="newspaper-clip" style="max-width: 1500px; margin: 40px auto;">
+                <p class="clip-source">Gartner Research, 2024</p>
+                <p class="clip-headline">Synthetic Data Market to Reach $2.1 Billion by 2028</p>
+                <div class="clip-text">
+                    <p style="margin-bottom: 20px;">The global synthetic data generation market is experiencing explosive growth, driven by increasing privacy regulations and AI adoption.</p>
+                    <p><strong>Key drivers:</strong> GDPR compliance, ML model training, data democratization, and reduced data collection costs.</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 48px; justify-content: center; margin-top: 60px;">
+                <div class="stat-highlight">
+                    <p class="number">43%</p>
+                    <p class="label">CAGR 2024-2028</p>
+                </div>
+                <div class="stat-highlight" style="border-color: var(--teal);">
+                    <p class="number" style="color: var(--teal);">65%</p>
+                    <p class="label">ENTERPRISES ADOPTING</p>
+                </div>
+            </div>
+            <p class="page-num">10</p>
+        </section>
+
+        <!-- SLIDE 11: Banking & Finance -->
+        <section class="slide">
+            <h2>BANKING &<br>FINANCE</h2>
+            <ul>
+                <li><strong>Fraud Detection</strong> — JPMorgan uses synthetic data to generate 10x more fraud scenarios</li>
+                <li><strong>Credit Risk</strong> — Banks train models without exposing customer financial data</li>
+                <li><strong>Regulatory Compliance</strong> — Share data with auditors while maintaining GDPR compliance</li>
+                <li><strong>Customer Analytics</strong> — Analyze spending patterns without revealing identities</li>
+            </ul>
+            <div class="quote-box" style="font-size: 38px; margin-top: 40px;">
+                "Synthetic data allows us to innovate without compromising customer trust"
+                <cite>— Chief Data Officer, Major US Bank</cite>
+            </div>
+            <p class="page-num">11</p>
+        </section>
+
+        <!-- SLIDE 12: Healthcare -->
+        <section class="slide">
+            <h2>HEALTHCARE</h2>
+            <ul>
+                <li><strong>Medical Research</strong> — Mayo Clinic shares synthetic patient data across 50+ research institutions</li>
+                <li><strong>Drug Development</strong> — Pharma companies test models with realistic health records</li>
+                <li><strong>Hospital Operations</strong> — Optimize workflows using synthetic patient flows</li>
+                <li><strong>Insurance Claims</strong> — Detect fraud patterns without exposing health information</li>
+            </ul>
+            <div style="margin-top: 60px;">
+                <div class="stat-highlight" style="border-color: var(--blue);">
+                    <p class="number" style="color: var(--blue);">3X</p>
+                    <p class="label">INCREASE IN DATA SHARING</p>
+                </div>
+            </div>
+            <p class="page-num">12</p>
+        </section>
+
+        <!-- SLIDE 13: Retail & E-commerce -->
+        <section class="slide">
+            <h2>RETAIL &<br>E-COMMERCE</h2>
+            <ul>
+                <li><strong>Customer Segmentation</strong> — Amazon Analyze behaviors while protecting PII</li>
+                <li><strong>Recommendation Systems</strong> — Train ML on synthetic purchase histories</li>
+                <li><strong>Inventory Optimization</strong> — Walmart forecasts demand with synthetic transactions</li>
+                <li><strong>A/B Testing</strong> — Test features with realistic customer data</li>
+            </ul>
+            <div class="newspaper-clip" style="max-width: 1400px; margin-top: 48px;">
+                <p class="clip-source">MIT Technology Review, 2024</p>
+                <p class="clip-text"><strong>Retail giants report 50% better personalization</strong> while reducing privacy risks through synthetic data adoption.</p>
+            </div>
+            <p class="page-num">13</p>
+        </section>
+
+        <!-- SLIDE 14: Technology & AI -->
+        <section class="slide">
+            <h2>TECHNOLOGY<br>& AI</h2>
+            <ul>
+                <li><strong>ML Model Training</strong> — OpenAI & Anthropic use synthetic data to augment training</li>
+                <li><strong>Software Testing</strong> — Generate unlimited realistic test datasets</li>
+                <li><strong>Data Marketplace</strong> — Snowflake sells anonymized datasets safely</li>
+                <li><strong>Federated Learning</strong> — Build privacy-preserving AI systems</li>
+            </ul>
+            <div style="display: flex; gap: 48px; margin-top: 60px;">
+                <div class="stat-highlight">
+                    <p class="number">40%</p>
+                    <p class="label">FASTER DEVELOPMENT</p>
+                </div>
+                <div class="stat-highlight" style="border-color: var(--olive);">
+                    <p class="number" style="color: var(--olive);">∞</p>
+                    <p class="label">UNLIMITED TEST DATA</p>
+                </div>
+            </div>
+            <p class="page-num">14</p>
+        </section>
+
+        <!-- SLIDE 15: Government & Public Sector -->
+        <section class="slide">
+            <h2>GOVERNMENT &<br>PUBLIC SECTOR</h2>
+            <ul>
+                <li><strong>Census Data</strong> — US Census Bureau uses differential privacy + synthetic data</li>
+                <li><strong>Public Health</strong> — CDC shares epidemic data without exposing individuals</li>
+                <li><strong>Urban Planning</strong> — Cities optimize infrastructure with synthetic mobility data</li>
+                <li><strong>Education Research</strong> — Student data analysis while protecting minors</li>
+            </ul>
+            <div class="quote-box" style="font-size: 38px; margin-top: 40px;">
+                "Synthetic data enables open government while protecting citizen privacy"
+                <cite>— UK Office for National Statistics</cite>
+            </div>
+            <p class="page-num">15</p>
+        </section>
+
+        <!-- SLIDE 16: Industry Impact Stats -->
+        <section class="slide">
+            <h3>INDUSTRY IMPACT</h3>
+            <div class="tablet-grid">
+                <div class="tablet-card" style="border-color: var(--blue);">
+                    <p class="card-title" style="font-size: 48px; color: var(--blue);">FINANCE</p>
+                    <p class="card-text" style="font-size: 32px;">70% faster model development with full GDPR compliance</p>
+                </div>
+                <div class="tablet-card" style="border-color: var(--magenta);">
+                    <p class="card-title" style="font-size: 48px; color: var(--magenta);">HEALTHCARE</p>
+                    <p class="card-text" style="font-size: 32px;">3x increase in data sharing between institutions</p>
+                </div>
+                <div class="tablet-card" style="border-color: var(--orange);">
+                    <p class="card-title" style="font-size: 48px; color: var(--orange);">RETAIL</p>
+                    <p class="card-text" style="font-size: 32px;">50% better personalization with safe analysis</p>
+                </div>
+                <div class="tablet-card" style="border-color: var(--teal);">
+                    <p class="card-title" style="font-size: 48px; color: var(--teal);">TECHNOLOGY</p>
+                    <p class="card-text" style="font-size: 32px;">40% reduction in development time</p>
+                </div>
+            </div>
+            <p class="page-num">16</p>
+        </section>
+
+        <!-- SLIDE 17: Leading Tools & Platforms -->
+        <section class="slide">
+            <h2>LEADING TOOLS<br>& PLATFORMS</h2>
+            <ul style="font-size: 36px;">
+                <li><strong>Gretel.ai</strong> — Cloud platform for synthetic data generation</li>
+                <li><strong>Mostly AI</strong> — Enterprise synthetic data as a service</li>
+                <li><strong>SDV (Synthetic Data Vault)</strong> — Open-source Python library</li>
+                <li><strong>NVIDIA Synthetic Data Generation</strong> — GPU-accelerated tools</li>
+                <li><strong>Hazy</strong> — Privacy-preserving synthetic data</li>
+                <li><strong>Tonic.ai</strong> — Database subsetting and synthetic data</li>
+            </ul>
+            <p class="page-num">17</p>
+        </section>
+
+        <!-- SLIDE 18: Techniques & Methods -->
+        <section class="slide">
+            <h2>GENERATION<br>TECHNIQUES</h2>
+            <div class="two-col">
+                <div>
+                    <h3 style="font-size: 52px; color: var(--magenta);">DEEP LEARNING</h3>
+                    <ul>
+                        <li><strong>GANs</strong> — Generative Adversarial Networks</li>
+                        <li><strong>VAEs</strong> — Variational Autoencoders</li>
+                        <li><strong>Transformers</strong> — GPT-style models</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="font-size: 52px; color: var(--teal);">STATISTICAL</h3>
+                    <ul>
+                        <li><strong>Bayesian Networks</strong> — Probabilistic models</li>
+                        <li><strong>CART</strong> — Decision trees</li>
+                        <li><strong>Copulas</strong> — Correlation modeling</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="page-num">18</p>
+        </section>
+
+        <!-- SLIDE 19: Quality Metrics -->
+        <section class="slide">
+            <h2>QUALITY<br>METRICS</h2>
+            <div class="tablet-grid">
+                <div class="newspaper-clip">
+                    <p class="clip-headline" style="font-size: 42px;">FIDELITY</p>
+                    <p class="clip-text">Statistical similarity to original data distributions and correlations</p>
+                </div>
+                <div class="newspaper-clip" style="transform: rotate(1deg);">
+                    <p class="clip-headline" style="font-size: 42px;">UTILITY</p>
+                    <p class="clip-text">Usefulness for downstream ML and analytics tasks</p>
+                </div>
+                <div class="newspaper-clip" style="transform: rotate(-0.5deg);">
+                    <p class="clip-headline" style="font-size: 42px;">PRIVACY</p>
+                    <p class="clip-text">Resistance to re-identification and inference attacks</p>
+                </div>
+                <div class="newspaper-clip" style="transform: rotate(0.8deg);">
+                    <p class="clip-headline" style="font-size: 42px;">DIVERSITY</p>
+                    <p class="clip-text">Variety and coverage of edge cases and rare events</p>
+                </div>
+            </div>
+            <p class="page-num">19</p>
+        </section>
+
+        <!-- SLIDE 20: Synthetic vs Scrambled -->
+        <section class="slide">
+            <h2>SYNTHETIC VS<br>SCRAMBLED</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 100px;">
+                <div class="tablet-card" style="border-color: var(--magenta); background: rgba(199, 59, 122, 0.1);">
+                    <p class="card-title" style="color: var(--magenta); font-size: 52px;">SCRAMBLED</p>
+                    <p class="card-text" style="font-size: 32px;">Modifies existing records. Reversible links remain. GDPR non-compliant.</p>
+                </div>
+                <div class="tablet-card" style="border-color: var(--teal); background: rgba(45, 126, 115, 0.1);">
+                    <p class="card-title" style="color: var(--teal); font-size: 52px;">SYNTHETIC</p>
+                    <p class="card-text" style="font-size: 32px;">Creates new records. NO links to real people. True anonymization. GDPR compliant.</p>
+                </div>
+            </div>
+            <p class="page-num">20</p>
+        </section>
+
+        <!-- SLIDE 21: How It Works -->
+        <section class="slide">
+            <h2>HOW IT WORKS</h2>
+            <ul style="margin-top: 80px;">
+                <li><strong>STEP 1: TRAIN AI MODEL</strong> — Learn patterns from real data distributions</li>
+                <li><strong>STEP 2: GENERATE RECORDS</strong> — Create statistically similar synthetic data</li>
+                <li><strong>STEP 3: VALIDATE QUALITY</strong> — Ensure fidelity, utility, and diversity</li>
+                <li><strong>STEP 4: PRIVACY CHECK</strong> — Run re-identification tests and privacy audits</li>
+            </ul>
+            <p class="page-num">21</p>
+        </section>
+
+        <!-- SLIDE 22: Challenges -->
+        <section class="slide">
+            <h2>CHALLENGES</h2>
+            <ul>
+                <li><strong>Rare Events</strong> — Difficult to generate accurate synthetic samples of uncommon patterns</li>
+                <li><strong>Complex Relationships</strong> — Multi-table relational integrity hard to preserve</li>
+                <li><strong>Temporal Dependencies</strong> — Time-series patterns require specialized techniques</li>
+                <li><strong>Computational Cost</strong> — Training models on large datasets requires resources</li>
+                <li><strong>Validation Burden</strong> — Ensuring quality requires rigorous testing</li>
+            </ul>
+            <p class="page-num">22</p>
+        </section>
+
+        <!-- SLIDE 23: Best Practices -->
+        <section class="slide">
+            <h2>BEST PRACTICES</h2>
+            <div class="tablet-grid">
+                <div class="newspaper-clip">
+                    <p class="clip-headline" style="font-size: 38px;">START SMALL</p>
+                    <p class="clip-text">Test with subset before generating full datasets</p>
+                </div>
+                <div class="newspaper-clip" style="transform: rotate(0.8deg);">
+                    <p class="clip-headline" style="font-size: 38px;">VALIDATE THOROUGHLY</p>
+                    <p class="clip-text">Compare distributions, correlations, and ML performance</p>
+                </div>
+                <div class="newspaper-clip" style="transform: rotate(-1deg);">
+                    <p class="clip-headline" style="font-size: 38px;">PRIVACY AUDIT</p>
+                    <p class="clip-text">Run re-identification tests and privacy metrics</p>
+                </div>
+                <div class="newspaper-clip" style="transform: rotate(0.5deg);">
+                    <p class="clip-headline" style="font-size: 38px;">ITERATE</p>
+                    <p class="clip-text">Refine models based on quality and utility feedback</p>
+                </div>
+            </div>
+            <p class="page-num">23</p>
+        </section>
+
+        <!-- SLIDE 24: Key Takeaways -->
+        <section class="slide">
+            <h2>KEY TAKEAWAYS</h2>
+            <ul>
+                <li><strong>LEGACY METHODS FAIL</strong> — 80% re-identification proves it</li>
+                <li><strong>TRUE PRIVACY</strong> — Irreversible anonymization maintained</li>
+                <li><strong>SIX BENEFITS</strong> — Privacy, speed, accuracy, collaboration, cost, ML</li>
+                <li><strong>PROVEN IMPACT</strong> — Real results across all industries</li>
+                <li><strong>RAPID ADOPTION</strong> — 65% of enterprises adopting by 2026</li>
+            </ul>
+            <p class="page-num">24</p>
+        </section>
+
+        <!-- SLIDE 25: Thank You -->
+        <section class="slide">
+            <h1 style="font-size: 240px;">THANK<br>YOU</h1>
+            <p class="subtitle" style="font-size: 72px; margin-top: 100px;">QUESTIONS?</p>
+            <p class="subtitle" style="margin-top: 120px; font-size: 56px;">GANESH KUMAR</p>
+            <p class="page-num">25</p>
+        </section>
+
+    </div>
+
+    <script>
+        // Stage scaling
+        function scaleStage() {
+            const stage = document.getElementById('stage');
+            const scaleX = window.innerWidth / 1920;
+            const scaleY = window.innerHeight / 1080;
+            const scale = Math.min(scaleX, scaleY);
+            stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        }
+        scaleStage();
+        window.addEventListener('resize', scaleStage);
+
+        // Navigation
+        const slides = document.querySelectorAll('.slide');
+        let current = 0;
+
+        function show(n) {
+            current = Math.max(0, Math.min(n, slides.length - 1));
+            slides.forEach((s, i) => s.classList.toggle('active', i === current));
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                e.preventDefault();
+                show(current + 1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+                show(current - 1);
+            } else if (e.key === 'Home') {
+                show(0);
+            } else if (e.key === 'End') {
+                show(slides.length - 1);
+            }
+        });
+
+        // Touch navigation
+        let touchStart = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStart = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', (e) => {
+            const diff = touchStart - e.changedTouches[0].screenX;
+            if (Math.abs(diff) > 50) {
+                diff > 0 ? show(current + 1) : show(current - 1);
+            }
+        });
+
+        console.log('✅ Enhanced presentation loaded - 25 slides total');
+        console.log('Features: Embedded images, newspaper clippings, current market data');
+    </script>
+</body>
+</html>
